@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -11,11 +13,30 @@ var (
 	kFlag = flag.String("k", "", "Path to the encrypted key file to generate an OTP")
 )
 
+func ValidateKey(filepath string) error {
+	path := strings.TrimSpace(filepath)
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("ft_otp: %v does not exist", path)
+	}
+	len := len(data)
+
+	if len != 64 {
+		return fmt.Errorf("ft_otp: key must be 64 hexadecimal characters")
+	}
+
+	return nil
+}
+
 func main() {
 	flag.Parse()
 
 	if *gFlag != "" {
-		fmt.Println("Encrypt and store key from ", *gFlag)
+		// validate key
+		err := ValidateKey(*gFlag)
+		fmt.Println("error validating : ", err)
+		//fmt.Println("Encrypt and store key from ", *gFlag)
 	}
 
 	if *kFlag != "" {
